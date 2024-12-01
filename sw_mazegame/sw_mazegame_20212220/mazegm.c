@@ -19,31 +19,6 @@ int difficulty = 0;              // 난이도 (0: 일반, 1: 어려움)
 int dx[] = { 0, 0, -1, 1 };
 int dy[] = { -1, 1, 0, 0 };
 
-<<<<<<< HEAD
-// 화면 출력
-void drawMaze() {
-    system("cls");
-    for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-            if (x == playerX && y == playerY) {
-                printf("* "); // 플레이어
-            }
-            else if (maze[y][x] == 1) {
-                printf("- "); // 벽
-            }
-            else if (maze[y][x] == 2) {
-                printf("E "); // 출구
-            }
-            else {
-                printf("  "); // 길 (공백)
-            }
-        }
-        printf("\n");
-    }
-}
-
-=======
->>>>>>> mod
 // 미로 초기화
 void initializeMaze() {
     for (int y = 0; y < height; y++) {
@@ -174,12 +149,6 @@ int main() {
 
     // 난이도 선택
     printf("랜덤 미로 탈출 게임에 오신 것을 환영합니다!\n");
-<<<<<<< HEAD
-    printf("플레이어는 '*'로 표시됩니다. 출구는 'E'입니다.\n");
-    printf("방향키(WASD)를 사용하여 이동하세요.\n");
-    printf("엔터 키를 누르면 게임이 시작됩니다!\n");
-    getchar();
-=======
     printf("플레이어는 'P'로 표시됩니다. 출구는 'E'입니다.\n");
     printf("난이도를 선택하세요:\n");
     printf("1. 일반 모드\n");
@@ -189,7 +158,6 @@ int main() {
     getchar(); // 입력 버퍼 제거
 
     difficulty--; // 0: 일반, 1: 어려움
->>>>>>> mod
 
     while (level <= MAX_LEVEL) {
         startLevel();
