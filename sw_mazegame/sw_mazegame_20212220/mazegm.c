@@ -14,6 +14,7 @@ int width, height;               // 현재 미로 크기
 int playerX, playerY;            // 플레이어 위치
 int level = 1;                   // 현재 레벨
 int difficulty = 0;              // 난이도 (0: 일반, 1: 어려움)
+time_t startTime, endTime;       // 타이머 시작 및 종료 시간
 
 // 방향 이동 배열 (상, 하, 좌, 우)
 int dx[] = { 0, 0, -1, 1 };
@@ -55,9 +56,21 @@ void generateMaze(int x, int y) {
     }
 }
 
+// 실시간 타이머 출력
+void displayTimer() {
+    time_t currentTime = time(NULL);
+    int elapsed = (int)difftime(currentTime, startTime);
+
+    int minutes = elapsed / 60;
+    int seconds = elapsed % 60;
+
+    printf("Time: %02d:%02d\n", minutes, seconds);
+}
+
 // 미로 그리기 (일반 모드)
 void drawMazeNormal() {
     system("cls");
+    displayTimer(); // 타이머 출력
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
             if (x == playerX && y == playerY) {
@@ -80,10 +93,11 @@ void drawMazeNormal() {
 // 미로 그리기 (어려움 모드: 3x3 시야 제한)
 void drawMazeHard() {
     system("cls");
+    displayTimer(); // 타이머 출력
     for (int y = 0; y < height; y++) {
         for (int x = 0; x < width; x++) {
             if (x == playerX && y == playerY) {
-                printf("P "); // 플레이어
+                printf("* "); // 플레이어
             }
             else if (x == width - 2 && y == height - 2) {
                 printf("E "); // 출구는 항상 표시
@@ -138,6 +152,9 @@ void startLevel() {
     playerX = 1;
     playerY = 1;
     visited[playerY][playerX] = 1; // 시작 위치 방문 처리
+
+    // 타이머 시작
+    startTime = time(NULL);
 }
 
 int main() {
@@ -149,7 +166,7 @@ int main() {
 
     // 난이도 선택
     printf("랜덤 미로 탈출 게임에 오신 것을 환영합니다!\n");
-    printf("플레이어는 'P'로 표시됩니다. 출구는 'E'입니다.\n");
+    printf("플레이어는 '*'로 표시됩니다. 출구는 'E'입니다.\n");
     printf("난이도를 선택하세요:\n");
     printf("1. 일반 모드\n");
     printf("2. 어려움 모드\n");
@@ -158,6 +175,9 @@ int main() {
     getchar(); // 입력 버퍼 제거
 
     difficulty--; // 0: 일반, 1: 어려움
+
+    // 게임 시작
+    time_t totalStartTime = time(NULL);
 
     while (level <= MAX_LEVEL) {
         startLevel();
@@ -190,6 +210,11 @@ int main() {
         }
     }
 
+    // 총 소요 시간 계산
+    endTime = time(NULL);
+    int totalElapsed = (int)difftime(endTime, totalStartTime);
     printf("축하합니다! 모든 단계를 클리어했습니다!\n");
+    printf("총 소요 시간: %02d:%02d\n", totalElapsed / 60, totalElapsed % 60);
+
     return 0;
 }
