@@ -92,35 +92,6 @@ void drawMazeNormal() {
     }
 }
 
-// 미로 그리기 (어려움 모드: 3x3 시야 제한)
-void drawMazeHard() {
-    system("cls");
-    displayTimer(); // 타이머 출력
-    for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-            if (x == playerX && y == playerY) {
-                printf("* "); // 플레이어
-            }
-            else if (x == width - 2 && y == height - 2) {
-                printf("E "); // 출구는 항상 표시
-            }
-            else if (visited[y][x]) {
-                printf(". "); // 지나온 길
-            }
-            else if (abs(playerX - x) <= 1 && abs(playerY - y) <= 1) {
-                if (maze[y][x] == 1)
-                    printf("- "); // 벽
-                else
-                    printf("  "); // 길
-            }
-            else {
-                printf("  "); // 보이지 않는 영역
-            }
-        }
-        printf("\n");
-    }
-}
-
 // 플레이어 이동
 void movePlayer(char input) {
     int nextX = playerX, nextY = playerY;
@@ -138,6 +109,21 @@ void movePlayer(char input) {
     }
 }
 
+// 막다른 길인지 판별
+int isDeadEnd(int x, int y) {
+    if (maze[y][x] != 0) return 0; // 길이 아니라면 false
+
+    int wallCount = 0;
+    for (int i = 0; i < 4; i++) {
+        int nx = x + dx[i];
+        int ny = y + dy[i];
+        if (nx < 0 || ny < 0 || nx >= width || ny >= height || maze[ny][nx] == 1) {
+            wallCount++;
+        }
+    }
+    return wallCount >= 3; // 인접한 벽이 3개 이상일 때 true
+}
+
 // 단계 시작
 void startLevel() {
     printf("Level %d 시작!\n", level);
@@ -147,13 +133,16 @@ void startLevel() {
     initializeMaze();
     generateMaze(1, 1);
 
-    // 출구 설정 (무작위로 배치)
+    // 출구 설정 (무작위 막다른 길에 배치)
     int exitX, exitY;
-    do {
+    while (1) {
         exitX = rand() % (width - 2) + 1;  // 1 ~ width-2
         exitY = rand() % (height - 2) + 1; // 1 ~ height-2
-    } while (maze[exitY][exitX] != 0 || (exitX == 1 && exitY == 1)); // 시작 위치와 겹치지 않도록
 
+        if (isDeadEnd(exitX, exitY) && !(exitX == 1 && exitY == 1)) { // 막다른 길이며 시작 위치가 아닌 경우
+            break;
+        }
+    }
     maze[exitY][exitX] = 2; // 출구 설정
 
     // 플레이어 초기 위치
@@ -174,7 +163,7 @@ int main() {
 
     // 난이도 선택
     printf("랜덤 미로 탈출 게임에 오신 것을 환영합니다!\n");
-    printf("플레이어는 '*'로 표시됩니다. 출구는 'E'입니다.\n");
+    printf("플레이어는 'P'로 표시됩니다. 출구는 'E'입니다.\n");
     printf("난이도를 선택하세요:\n");
     printf("1. 일반 모드\n");
     printf("2. 어려움 모드\n");
@@ -192,12 +181,7 @@ int main() {
 
         // 현재 단계 진행
         while (1) {
-            if (difficulty == 0) {
-                drawMazeNormal(); // 일반 모드
-            }
-            else {
-                drawMazeHard();   // 어려움 모드
-            }
+            drawMazeNormal();
 
             // 출구 도달 체크
             if (maze[playerY][playerX] == 2) {
