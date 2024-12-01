@@ -14,7 +14,9 @@ int width, height;               // 현재 미로 크기
 int playerX, playerY;            // 플레이어 위치
 int level = 1;                   // 현재 레벨
 int difficulty = 0;              // 난이도 (0: 일반, 1: 어려움)
-time_t startTime, endTime;       // 타이머 시작 및 종료 시간
+time_t totalStartTime, totalEndTime; // 전체 타이머
+time_t levelStartTime, levelEndTime; // 단계별 타이머
+int levelTimes[MAX_LEVEL];       // 각 단계 소요 시간 (초)
 
 // 방향 이동 배열 (상, 하, 좌, 우)
 int dx[] = { 0, 0, -1, 1 };
@@ -59,7 +61,7 @@ void generateMaze(int x, int y) {
 // 실시간 타이머 출력
 void displayTimer() {
     time_t currentTime = time(NULL);
-    int elapsed = (int)difftime(currentTime, startTime);
+    int elapsed = (int)difftime(currentTime, levelStartTime);
 
     int minutes = elapsed / 60;
     int seconds = elapsed % 60;
@@ -153,8 +155,8 @@ void startLevel() {
     playerY = 1;
     visited[playerY][playerX] = 1; // 시작 위치 방문 처리
 
-    // 타이머 시작
-    startTime = time(NULL);
+    // 단계별 타이머 시작
+    levelStartTime = time(NULL);
 }
 
 int main() {
@@ -177,7 +179,7 @@ int main() {
     difficulty--; // 0: 일반, 1: 어려움
 
     // 게임 시작
-    time_t totalStartTime = time(NULL);
+    totalStartTime = time(NULL);
 
     while (level <= MAX_LEVEL) {
         startLevel();
@@ -193,6 +195,8 @@ int main() {
 
             // 출구 도달 체크
             if (maze[playerY][playerX] == 2) {
+                levelEndTime = time(NULL); // 단계 종료 시간 기록
+                levelTimes[level - 1] = (int)difftime(levelEndTime, levelStartTime); // 단계 소요 시간 계산
                 printf("축하합니다! Level %d을(를) 클리어했습니다!\n", level);
                 break;
             }
@@ -211,9 +215,14 @@ int main() {
     }
 
     // 총 소요 시간 계산
-    endTime = time(NULL);
-    int totalElapsed = (int)difftime(endTime, totalStartTime);
-    printf("축하합니다! 모든 단계를 클리어했습니다!\n");
+    totalEndTime = time(NULL);
+    int totalElapsed = (int)difftime(totalEndTime, totalStartTime);
+
+    // 결과 출력
+    printf("\n=== 게임 결과 ===\n");
+    for (int i = 0; i < MAX_LEVEL; i++) {
+        printf("Level %d 소요 시간: %02d:%02d\n", i + 1, levelTimes[i] / 60, levelTimes[i] % 60);
+    }
     printf("총 소요 시간: %02d:%02d\n", totalElapsed / 60, totalElapsed % 60);
 
     return 0;
