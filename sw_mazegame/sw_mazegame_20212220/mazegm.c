@@ -147,8 +147,14 @@ void startLevel() {
     initializeMaze();
     generateMaze(1, 1);
 
-    // 출구 설정
-    maze[height - 2][width - 2] = 2;
+    // 출구 설정 (무작위로 배치)
+    int exitX, exitY;
+    do {
+        exitX = rand() % (width - 2) + 1;  // 1 ~ width-2
+        exitY = rand() % (height - 2) + 1; // 1 ~ height-2
+    } while (maze[exitY][exitX] != 0 || (exitX == 1 && exitY == 1)); // 시작 위치와 겹치지 않도록
+
+    maze[exitY][exitX] = 2; // 출구 설정
 
     // 플레이어 초기 위치
     playerX = 1;
