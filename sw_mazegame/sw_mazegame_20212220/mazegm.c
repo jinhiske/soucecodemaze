@@ -29,12 +29,15 @@ void drawMaze() {
         for (int x = 0; x < WIDTH; x++) {
             if (x == playerX && y == playerY) {
                 printf("P "); // 플레이어
-            } else if (maze[y][x] == 1) {
-                printf("# "); // 벽
-            } else if (maze[y][x] == 2) {
+            }
+            else if (maze[y][x] == 1) {
+                printf("- "); // 벽
+            }
+            else if (maze[y][x] == 2) {
                 printf("E "); // 출구
-            } else {
-                printf(". "); // 길
+            }
+            else {
+                printf("  "); // 길 (공백)
             }
         }
         printf("\n");
